@@ -1,0 +1,5 @@
+# Mac directories
+.idea
+.DS_Store
+# Ignore the vendor directory. Composer will pull that in
+vendor

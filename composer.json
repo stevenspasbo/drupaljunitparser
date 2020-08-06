@@ -1,0 +1,11 @@
+{
+  "name": "ndrake0027/drupal-junit-parser",
+  "description": "JUnit parser for Drupal behat and PHPUnit output to a simple html table.",
+  "type": "project",
+  "require": {
+    "symfony/serializer": "^3.0"
+  },
+  "autoload": {
+    "psr-4": { "DrupalJUnit\\": "src/"}
+  }
+}
