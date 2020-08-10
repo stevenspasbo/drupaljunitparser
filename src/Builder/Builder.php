@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: nick.drake
- * Date: 6/6/18
- * Time: 4:36 PM
- */
 
 namespace DrupalJUnit\Builder;
 

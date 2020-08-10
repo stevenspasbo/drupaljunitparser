@@ -2,9 +2,9 @@
 
 namespace DrupalJUnit\Parser;
 
+use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use DrupalJUnit\Builder\Builder;
 
@@ -330,48 +330,52 @@ class Parser {
    */
   private function parseBehat($file) {
     $crawler = new Crawler();
-    $crawler->addXmlContent(file_get_contents($file));
-    $suiteName = $crawler->filter('testsuites')->attr('name');
-    $this->stats[$suiteName] = [
-      'Suite name' => $suiteName,
-      'Total tests' => 0,
-      'Total failures' => 0,
-      'Total errors' => 0,
-    ];
-    $crawler->filter('testsuite')->each(function ($node, $i) use ($suiteName) {
-      /** @var $node Crawler */
-      $this->stats[$suiteName]['Suite name'] = $suiteName;
-      $this->stats[$suiteName]['Total tests'] += $node->attr('tests');
-      $this->stats[$suiteName]['Total failures'] += $node->attr('failures');
-      $this->stats[$suiteName]['Total errors'] += $node->attr('errors');
-      $this->stats['total_results']['Total tests'] += $node->attr('tests');
-      $this->stats['total_results']['Total failures'] += $node->attr('failures');
-      $this->stats['total_results']['Total errors'] += $node->attr('errors');
-      $this->report[$suiteName][$i] =
-        [
-          'Suite name' => $suiteName,
-          'Feature name' => $node->attr('name'),
-          'Tests' => $node->attr('tests'),
-          'Skipped' => $node->attr('skipped'),
-          'Failures' => $node->attr('failures'),
-          'Errors' => $node->attr('errors'),
-        ];
-      $feature = $node->attr('name');
-      $node->filter('testcase')
-        ->each(function ($attr) use ($suiteName, $feature, $i) {
-          /** @var $attr Crawler */
-          if ($attr->attr('status') === 'failed') {
-            $this->errors[$suiteName][$i] =
-              [
-                'Suite' => $suiteName,
-                'Feature' => $feature,
-                'Scenario' => $attr->attr('name'),
-                'Status' => $attr->attr('status'),
-                'Error' => $attr->filter('failure')->attr('message'),
-              ];
-          }
+    $contents = file_get_contents($file);
+    if ($contents) {
+      $crawler->addXmlContent($contents);
+      $suiteName = $crawler->filter('testsuites')->attr('name');
+      $this->stats[$suiteName] = [
+        'Suite name' => $suiteName,
+        'Total tests' => 0,
+        'Total failures' => 0,
+        'Total errors' => 0,
+      ];
+      $crawler->filter('testsuite')
+        ->each(function ($node, $i) use ($suiteName) {
+          /** @var $node Crawler */
+          $this->stats[$suiteName]['Suite name'] = $suiteName;
+          $this->stats[$suiteName]['Total tests'] += $node->attr('tests');
+          $this->stats[$suiteName]['Total failures'] += $node->attr('failures');
+          $this->stats[$suiteName]['Total errors'] += $node->attr('errors');
+          $this->stats['total_results']['Total tests'] += $node->attr('tests');
+          $this->stats['total_results']['Total failures'] += $node->attr('failures');
+          $this->stats['total_results']['Total errors'] += $node->attr('errors');
+          $this->report[$suiteName][$i] =
+            [
+              'Suite name' => $suiteName,
+              'Feature name' => $node->attr('name'),
+              'Tests' => $node->attr('tests'),
+              'Skipped' => $node->attr('skipped'),
+              'Failures' => $node->attr('failures'),
+              'Errors' => $node->attr('errors'),
+            ];
+          $feature = $node->attr('name');
+          $node->filter('testcase')
+            ->each(function ($attr) use ($suiteName, $feature, $i) {
+              /** @var $attr Crawler */
+              if ($attr->attr('status') === 'failed') {
+                $this->errors[$suiteName][$i] =
+                  [
+                    'Suite' => $suiteName,
+                    'Feature' => $feature,
+                    'Scenario' => $attr->attr('name'),
+                    'Status' => $attr->attr('status'),
+                    'Error' => $attr->filter('failure')->attr('message'),
+                  ];
+              }
+            });
         });
-    });
+    }
   }
 
   /**

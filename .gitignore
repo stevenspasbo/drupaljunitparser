@@ -3,3 +3,4 @@
 .DS_Store
 # Ignore the vendor directory. Composer will pull that in
 vendor
+composer.lock
