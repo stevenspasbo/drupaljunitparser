@@ -3,9 +3,9 @@
   "description": "JUnit parser for Drupal behat and PHPUnit output to a simple html table.",
   "type": "project",
   "require": {
-    "symfony/serializer": "^3.0",
-    "symfony/dom-crawler": "3.4.36",
-    "symfony/property-access": "4.4.30"
+    "symfony/serializer": "^6",
+    "symfony/dom-crawler": "^6",
+    "symfony/property-access": "^6"
   },
   "autoload": {
     "psr-4": { "DrupalJUnit\\": "src/"}
