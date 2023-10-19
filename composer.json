@@ -4,8 +4,7 @@
   "type": "library",
   "require": {
     "symfony/serializer": "^6",
-    "symfony/dom-crawler": "^6",
-    "symfony/property-access": "^6"
+    "symfony/dom-crawler": "^6"
   },
   "autoload": {
     "psr-4": {
